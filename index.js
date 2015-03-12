@@ -65,7 +65,7 @@ function OniyiRequestorClient(options) {
 	} else {
 		// ... if not, create one
 		// provide only those options that are of any value for the requestor
-		self.requestor = new oniyiRequestor(_.merge(options.requestor, _.pick(options, ['redis', 'redisClient'])));
+		self.requestor = new oniyiRequestor(_.merge(options.requestor, _.pick(options, ['redis'])));
 	}
 
 	self.defaultRequestOptions = options.defaultRequestOptions;
@@ -132,7 +132,7 @@ OniyiRequestorClient.prototype.makeRequest = function(requestMethod, requestOpti
 		}
 
 		// response was coming from cache and is parsed already
-		if (response.fromCache && response.processed) {
+		if (response.fromCache && response.parsed) {
 			return requestOptions.callback(null, response, JSON.parse(body));
 		}
 
@@ -141,14 +141,14 @@ OniyiRequestorClient.prototype.makeRequest = function(requestMethod, requestOpti
 			return requestOptions.callback(null, response, body);
 		}
 
-		// response has not been processed yet, so let's do it
+		// response has not been parsed yet, so let's do it
 		var parsedResponseBody = responseBodyParser(body);
 
 		// put the parsed response back to cache
 		passBackToCache(null, JSON.stringify(parsedResponseBody), 'string');
 
 		// finally resolve the deferred wiht our parsed responseBody
-		response.processed = true;
+		response.parsed = true;
 		return requestOptions.callback(null, response, parsedResponseBody);
 	});
 };
