@@ -1,6 +1,6 @@
 {
   "name": "oniyi-requestor-client",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "An abstract http client template module that uses oniyi-requestor for making and caching http calls",
   "author": {
     "name": "Benjamin Kroeger",
@@ -19,8 +19,9 @@
     "caching"
   ],
   "dependencies": {
-    "lodash": "^3.5.0",
-    "oniyi-requestor": "^0.3.0"
+    "async": "~0.9.0",
+    "lodash": "~3.7.0",
+    "oniyi-requestor": "~0.4.0"
   },
   "devDependencies": {
     "grunt-cli": "^0.1.13",
