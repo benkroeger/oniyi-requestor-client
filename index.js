@@ -40,7 +40,7 @@ function putCookiesInJar(setCookieHeaders, completeRequestURI, cookieJar, callba
     setCookieHeaders = [setCookieHeaders];
   }
   async.each(setCookieHeaders, function(setCookieHeader, callback) {
-    cookieJar.setCookie(setCookieHeader, callback);
+    cookieJar.setCookie(setCookieHeader, completeRequestURI, callback);
   }, callback);
 }
 
