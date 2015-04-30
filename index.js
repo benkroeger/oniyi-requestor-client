@@ -101,7 +101,7 @@ function OniyiRequestorClient(options) {
       host: 'localhost',
       port: 6379
     },
-    requestor: {
+    requestorOptions: {
       throttle: {},
       cache: {},
       disableCache: false,
@@ -114,12 +114,13 @@ function OniyiRequestorClient(options) {
   }, options);
 
   // check if a requestor instance was provided
-  if (!options.requestor instanceof OniyiRequestor) {
+  if (options.requestor instanceof OniyiRequestor) {
     self.requestor = options.requestor;
+    // @TODO: update throttle and cache settings provided in requestorOptions
   } else {
     // ... if not, create one
     // provide only those options that are of any value for the requestor
-    self.requestor = new OniyiRequestor(_.merge(options.requestor, _.pick(options, ['redis'])));
+    self.requestor = new OniyiRequestor(_.merge(options.requestorOptions, _.pick(options, ['redis'])));
   }
 
   self.defaultRequestOptions = options.defaultRequestOptions;
@@ -187,9 +188,9 @@ OniyiRequestorClient.prototype.makeRequest = function(requestMethod, requestOpti
         }
         if (response.headers && response.headers['set-cookie'] && response.request.uri.href) {
           return putCookiesInJar(response.headers['set-cookie'], response.request.uri.href, jar, function(err) {
-						if (err) {
-							console.log('an error occured when storing cookies in jar {%s}', jar.id);
-						}          	
+            if (err) {
+              console.log('an error occured when storing cookies in jar {%s}', jar.id);
+            }           
             return requestCallback(err, response, body, passBackToCache);
           });
         }

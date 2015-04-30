@@ -1,6 +1,6 @@
 {
   "name": "oniyi-requestor-client",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "An abstract http client template module that uses oniyi-requestor for making and caching http calls",
   "author": {
     "name": "Benjamin Kroeger",
