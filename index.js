@@ -165,11 +165,10 @@ OniyiRequestorClient.prototype.makeRequest = function(requestMethod, requestOpti
   var self = this,
     jar = requestOptions.jar;
 
-
   var requestCallback = makeRequestCallback(responseBodyParser, callback);
   // when we only get three arguments, we assume that responseBodyParser is actually our callback
   if (!callback) {
-    requestCallback = makeRequestCallback(null, jar, responseBodyParser);
+    requestCallback = makeRequestCallback(null, responseBodyParser);
   }
 
   // since "request" and thus "oniyi-requestor" don't work with asynchronous cookie stores, we need to handle these separately.
