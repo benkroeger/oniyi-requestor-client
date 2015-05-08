@@ -6,7 +6,6 @@ var util = require('util'),
 
 // 3rd party modules
 var _ = require('lodash'),
-  async = require('async'),
   OniyiRequestor = require('oniyi-requestor');
 
 // local variable definitions
@@ -34,15 +33,6 @@ var requestValidParameters = [
 ];
 
 // local function definition
-
-function putCookiesInJar(setCookieHeaders, completeRequestURI, cookieJar, callback) {
-  if (typeof setCookieHeaders === 'string') {
-    setCookieHeaders = [setCookieHeaders];
-  }
-  async.each(setCookieHeaders, function(setCookieHeader, callback) {
-    cookieJar.setCookie(setCookieHeader, completeRequestURI, callback);
-  }, callback);
-}
 
 function makeRequestCallback(responseBodyParser, callback) {
   var error;
@@ -162,8 +152,7 @@ OniyiRequestorClient.prototype.getRequestOptions = function(options) {
 };
 
 OniyiRequestorClient.prototype.makeRequest = function(requestMethod, requestOptions, responseBodyParser, callback) {
-  var self = this,
-    jar = requestOptions.jar;
+  var self = this;
 
   var requestCallback = makeRequestCallback(responseBodyParser, callback);
   // when we only get three arguments, we assume that responseBodyParser is actually our callback
@@ -171,33 +160,6 @@ OniyiRequestorClient.prototype.makeRequest = function(requestMethod, requestOpti
     requestCallback = makeRequestCallback(null, responseBodyParser);
   }
 
-  // since "request" and thus "oniyi-requestor" don't work with asynchronous cookie stores, we need to handle these separately.
-  if (jar && jar.store && !jar.store.synchronous) {
-    return jar.getCookieString(requestOptions.uri, function(err, cookieString) {
-      if (err) {
-        return callback(err);
-      }
-
-      requestOptions.jar = null;
-      requestOptions.headers = requestOptions.headers || {};
-      requestOptions.headers.cookie = cookieString + ((requestOptions.headers.cookie) ? '; ' + requestOptions.headers.cookie : '');
-      return self.requestor[requestMethod].call(self.requestor, requestOptions, function(err, response, body, passBackToCache) {
-        if (err) {
-          return requestCallback(err, response, body, passBackToCache);
-        }
-        if (response.headers && response.headers['set-cookie'] && response.request.uri.href) {
-          return putCookiesInJar(response.headers['set-cookie'], response.request.uri.href, jar, function(err) {
-            if (err) {
-              console.log('an error occured when storing cookies in jar {%s}', jar.id);
-            }           
-            return requestCallback(err, response, body, passBackToCache);
-          });
-        }
-
-        return requestCallback(err, response, body, passBackToCache);
-      });
-    });
-  }
   return self.requestor[requestMethod].call(self.requestor, requestOptions, requestCallback);
 };
 
